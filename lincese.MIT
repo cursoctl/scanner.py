@@ -1,11 +1,9 @@
 
 ### 3. **Licença MIT**:
-É uma boa prática adicionar uma licença ao seu repositório, e a **Licença MIT** é uma das mais comuns para projetos de código aberto. Aqui está o conteúdo do arquivo **LICENSE** para incluir:
 
-```text
 MIT License
 
-Copyright (c) 2024 [Seu Nome]
+Copyright (c) 2024 [marcos leal]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
