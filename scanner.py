@@ -9,26 +9,48 @@
 
 import socket
 import ipaddress
+import concurrent.futures
 
-def varrer_rede(rede):
+# Função para verificar a porta de um IP
+def verificar_ip(ip, porta=80):
+    try:
+        # Cria o socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.5)  # Timeout curto
+        resultado = sock.connect_ex((str(ip), porta))  # Verifica a porta
+        sock.close()
+        if resultado == 0:
+            return f"[ATIVO] Dispositivo encontrado: {ip} na porta {porta}"
+        else:
+            return None
+    except socket.error as e:
+        return None
+
+# Função para varrer a rede
+def varrer_rede(rede, portas=[80]):
     print(f"\nIniciando varredura na rede: {rede}")
     try:
         # Cria um objeto de rede para iterar sobre os IPs
-        for ip in ipaddress.IPv4Network(rede, strict=False):
-            try:
-                # Tenta se conectar ao IP na porta 80 (padrão para HTTP)
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(0.5)  # Timeout curto para rapidez
-                resultado = sock.connect_ex((str(ip), 80))  # Porta 80
-                if resultado == 0:
-                    print(f"[ATIVO] Dispositivo encontrado: {ip}")
-                sock.close()
-            except Exception as e:
-                pass
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            # Cria as tarefas para cada IP
+            tarefas = []
+            for ip in ipaddress.IPv4Network(rede, strict=False):
+                for porta in portas:
+                    tarefas.append(executor.submit(verificar_ip, ip, porta))
+            
+            # Processa os resultados
+            for tarefa in concurrent.futures.as_completed(tarefas):
+                resultado = tarefa.result()
+                if resultado:
+                    print(resultado)
+
     except ValueError as ve:
         print(f"Erro: {ve}")
 
 # Solicitar a rede do usuário
 if __name__ == "__main__":
     rede = input("Digite a rede no formato CIDR (ex: 192.168.0.0/24): ")
-    varrer_rede(rede)
+    portas_input = input("Digite as portas (separadas por vírgula, ex: 80,22): ")
+    portas = [int(p.strip()) for p in portas_input.split(",")]
+    varrer_rede(rede, portas)
+
