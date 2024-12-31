@@ -11,9 +11,4 @@ Este script foi desenvolvido para fins educacionais, com o objetivo de demonstra
 - Tenta se conectar à porta 80 (HTTP) de cada dispositivo na rede.
 - Exibe na tela os IPs dos dispositivos encontrados.
 
-## Como Usar
 
-1. Clone o repositório:
-   ```bash
-  
-https://github.com/cursoctl/scanner.py
